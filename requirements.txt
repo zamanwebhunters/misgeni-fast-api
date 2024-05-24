@@ -1,5 +1,5 @@
 fastapi==0.111.0
-uvicorn==0.29.3
+uvicorn==0.18.3
 future==1.0.0
 pyzk==0.9
 pydantic==2.7.1
