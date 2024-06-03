@@ -3,4 +3,5 @@ uvicorn==0.18.3
 future==1.0.0
 pyzk==0.9
 pydantic==2.7.1
+gunicorn==22.0.4
 

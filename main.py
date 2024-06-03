@@ -19,7 +19,13 @@ def interpret_event(punch: int, status_codes: Optional[Dict[int, str]]) -> str:
 def get_attendance_data(ip: str, port: int, start_time_str: str, end_time_str: str, status_codes: Optional[Dict[int, str]] = None) -> Any:
     conn = None
     try:
-        zk = ZK(ip, port=port, timeout=10, password=0, force_udp=False, ommit_ping=False)
+        print("ip",ip)
+        print("port",port)
+        print("start_time_str",start_time_str)
+        print("end_time_str",end_time_str)
+        print("status_codes",status_codes)
+
+        zk = ZK(ip, port=port, timeout=15, password=0, force_udp=False, ommit_ping=False)
         conn = zk.connect()
         conn.disable_device()
         print("Connected successfully")
