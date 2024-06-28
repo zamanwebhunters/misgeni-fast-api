@@ -25,7 +25,7 @@ def get_attendance_data(ip: str, port: int, start_time_str: str, end_time_str: s
     try:
         logging.info(f"Connecting to ZK device at {ip}:{port}")
         
-        zk = ZK(ip, port=port, timeout=15, password=0, force_udp=False, ommit_ping=False, encoding='UTF-8')
+        zk = ZK(ip, port=port, timeout=30, password=0, force_udp=False, ommit_ping=False, encoding='UTF-8')
         conn = zk.connect()
         conn.disable_device()
 
