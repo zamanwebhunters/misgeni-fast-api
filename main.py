@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import Optional, Dict, Any
 from zk import ZK
 from datetime import datetime
@@ -19,15 +19,16 @@ def interpret_event(punch: int, status_codes: Optional[Dict[int, str]]) -> str:
 def get_attendance_data(ip: str, port: int, start_time_str: str, end_time_str: str, status_codes: Optional[Dict[int, str]] = None) -> Any:
     conn = None
     try:
-        print("ip",ip)
-        print("port",port)
-        print("start_time_str",start_time_str)
-        print("end_time_str",end_time_str)
-        print("status_codes",status_codes)
+        print("ip", ip)
+        print("port", port)
+        print("start_time_str", start_time_str)
+        print("end_time_str", end_time_str)
+        print("status_codes", status_codes)
 
-        zk = ZK(ip, port=port, timeout=15, password=0, force_udp=False, ommit_ping=False)
+        zk = ZK(ip, port=port, timeout=15, password=0, force_udp=False, ommit_ping=False, encoding='UTF-8')
         conn = zk.connect()
         conn.disable_device()
+
         print("Connected successfully")
 
         start_time = datetime.strptime(start_time_str, '%Y-%m-%d %H:%M:%S')
@@ -35,11 +36,13 @@ def get_attendance_data(ip: str, port: int, start_time_str: str, end_time_str: s
 
         users = conn.get_users()
         user_dict = {user.user_id: user.name for user in users}
-
+        template = conn.get_templates()
         attendance = conn.get_attendance()
+        
         attendance_data = []
 
         for record in attendance:
+            print("Connected successfully", record)
             if start_time <= record.timestamp <= end_time:
                 user_id = record.user_id
                 user_name = user_dict.get(user_id, "Unknown")
@@ -77,3 +80,9 @@ def read_attendance(request: AttendanceRequest):
         raise HTTPException(status_code=500, detail=attendance_data["error"])
 
     return attendance_data
+
+@app.get("/")
+def server_running():
+    print("server check")
+    return {"message": "server is running"}
+
