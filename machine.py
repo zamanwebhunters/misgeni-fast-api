@@ -12,11 +12,14 @@ def interpret_event(punch: int, status_codes: Optional[Dict[str, str]]) -> str:
             return event
     return "Unknown event"
 
-def get_attendance_data(ip: str, port: int, start_time_str: str, end_time_str: str, status_codes: Optional[Dict[int, str]] = None) -> Any:
+def get_attendance_data(ip: str, port: int, start_time_str: str, end_time_str: str,password:str ,status_codes: Optional[Dict[int, str]] = None) -> Any:
     conn = None
     try:
-        logging.info(f"Connecting to ZK device at {ip}:{port}")
-        zk = ZK(ip, port=port, timeout=30, password=0, force_udp=False, ommit_ping=False, encoding='UTF-8')
+        machine_password=0
+        if(password):
+            machine_password = password
+        logging.info(f"Connecting to ZK device at {ip}:{port} with machine_password {machine_password}")
+        zk = ZK(ip, port=port, timeout=30, password=machine_password, force_udp=False, ommit_ping=False)
         conn = zk.connect()
         conn.disable_device()
         logging.info("Connected successfully")

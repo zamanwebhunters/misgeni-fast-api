@@ -35,8 +35,8 @@ def data_from_db(org_data: list):
             if not org_info['last_time_update']:
                start_time_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             else:
-               
-               start_time_str = datetime.strptime(org_info['last_time_update'], '%Y-%m-%dT%H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
+                 start_time_str= normalize_datetime(org_info['last_time_update'])
+            #    start_time_str = datetime.strptime(org_info['last_time_update'], '%Y-%m-%dT%H:%M:%S').strftime('%Y-%m-%d %H:%M:%S')
             try:
                 start_time_str =  start_time_str
                 end_time_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -45,9 +45,10 @@ def data_from_db(org_data: list):
                 port = int(org_info['port'])
                 status_codes = org_info['status_codes']
                 employee_details = org_info['employee_id']
+                password = org_info['password']
                 temp_res="Organization data destructuring"
                
-                attendance_data = get_attendance_data(ip, port, start_time_str, end_time_str, status_codes)
+                attendance_data = get_attendance_data(ip, port, start_time_str, end_time_str,password,status_codes)
                 if attendance_data:
                     cleaned_machine_data = cleaning_machine_data_for_db(attendance_data, organization_id ,employee_details)
                     attendance_details_to_insert.append({
@@ -104,3 +105,14 @@ def call_handle_attendance(json_input):
         raise HTTPException(status_code=500, detail="Error calling handle_attendance function")
 
 
+def normalize_datetime(datetime_str):
+ 
+    try:
+        # Attempt to parse the datetime string with milliseconds
+        dt = datetime.strptime(datetime_str, '%Y-%m-%dT%H:%M:%S.%f')
+    except ValueError:
+        # If it fails, attempt to parse the datetime string without milliseconds
+        dt = datetime.strptime(datetime_str, '%Y-%m-%dT%H:%M:%S')
+    # Format the datetime object to ignore milliseconds and set seconds to 00
+    normalized_dt_str = dt.strftime('%Y-%m-%d %H:%M:00')
+    return normalized_dt_str

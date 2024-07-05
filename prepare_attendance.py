@@ -22,7 +22,7 @@ def prepare_attendance_to_db(attendance_array: list, employee_details:list):
                 }
                 prepared_records.append(record)
 
-        print("prepared_records", prepared_records)
+       
         if len(prepared_records) > 0: 
             preapared_attendance_data=[]
             check_in_details , check_out_details , break_in_details , break_out_details , Unknown_events = filter_events_by_type(prepared_records)
