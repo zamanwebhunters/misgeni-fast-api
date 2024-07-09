@@ -29,7 +29,7 @@ def get_attendance_data(ip: str, port: int, start_time_str: str, end_time_str: s
         users = conn.get_users()
         user_dict = {user.user_id: user.name for user in users}
         attendance = conn.get_attendance()
-         
+        print("attendance", attendance)
         attendance_data = []
         for record in attendance:
             if start_time <= record.timestamp <= end_time:
