@@ -31,7 +31,7 @@ def get_attendance_data(ip: str, port: int, start_time_str: str, end_time_str: s
         conn = zk.connect()
         conn.disable_device()
 
-        print("Connected successfully")
+        
 
         start_time = datetime.strptime(start_time_str, '%Y-%m-%d %H:%M:%S')
         end_time = datetime.strptime(end_time_str, '%Y-%m-%d %H:%M:%S')
@@ -59,7 +59,6 @@ def get_attendance_data(ip: str, port: int, start_time_str: str, end_time_str: s
         return attendance_data
 
     except Exception as e:
-        print(f"Error: {str(e)}")
         return {"error": str(e)}
 
     finally:

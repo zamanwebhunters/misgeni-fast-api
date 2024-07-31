@@ -23,7 +23,6 @@ def get_attendance_data(ip: str, port: int, start_time_str: str, end_time_str: s
         conn = zk.connect()
         conn.disable_device()
         logging.info("Connected successfully")
-
         start_time = datetime.strptime(start_time_str, '%Y-%m-%d %H:%M:%S')
         end_time = datetime.strptime(end_time_str, '%Y-%m-%d %H:%M:%S')
         users = conn.get_users()

@@ -51,10 +51,17 @@ def data_from_db(org_data: list):
                 attendance_data = get_attendance_data(ip, port, start_time_str, end_time_str,password,status_codes)
                 if attendance_data:
                     cleaned_machine_data = cleaning_machine_data_for_db(attendance_data, organization_id ,employee_details)
-                    attendance_details_to_insert.append({
-                         "org_id": organization_id, 
-                         "temp_res": cleaned_machine_data
-                    })
+                    if len(cleaned_machine_data)>0:
+                        attendance_details_to_insert.append({
+                            "org_id": organization_id, 
+                            "temp_res": cleaned_machine_data
+                        })
+                    else:
+                        temp_res = f"No Today data to insert for {str(organization_id)} from machine"
+                        detailed_res.append({
+                        'org_id': organization_id,
+                        'temp_res' : temp_res
+                        })  
                 else:
                     temp_res = f"No data to insert for {str(organization_id)} from machine"
                     detailed_res.append({
@@ -66,6 +73,7 @@ def data_from_db(org_data: list):
             except Exception as e:
                 logging.error(f"Error processing organization{str(e)}")
     if(len(attendance_details_to_insert) > 0):
+       print()
        supabase_insertion_res= call_handle_attendance(attendance_details_to_insert) 
        detailed_res.append({
            "supabase_insertion_res": supabase_insertion_res
@@ -81,11 +89,12 @@ def data_from_db(org_data: list):
 def cleaning_machine_data_for_db(attendance_data: list, organization_id: str, employee_details :list):
     try:
         if attendance_data:
-            attendance_details = prepare_attendance_to_db(attendance_data, employee_details)
+            sorted_data = sorted(attendance_data, key=lambda x: datetime.strptime(x['timestamp'], '%Y-%m-%d %H:%M:%S'))
+            attendance_details = prepare_attendance_to_db(sorted_data, employee_details)
             if len(attendance_details) > 0:
                 return attendance_details
             else:
-                return "No Event to insert after Prepare Attendance"    
+                return  []   
     except Exception as e:
         logging.error(f"Error inserting attendance data for organization {organization_id}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error inserting attendance data for organization {organization_id}")
@@ -93,7 +102,6 @@ def cleaning_machine_data_for_db(attendance_data: list, organization_id: str, em
 
 def call_handle_attendance(json_input):
     try:
-        
         client = get_supabase_public_client()
         response = client.rpc("handle_attendance", {"json_input": json_input}).execute()
         return {
